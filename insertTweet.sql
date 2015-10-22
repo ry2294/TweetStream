@@ -21,56 +21,57 @@ GO
 -- Description:	<Description,,>
 -- =============================================
 CREATE PROCEDURE insertTweet (
-@tweetId nvarchar,
-@text nvarchar,
-@hashTag nvarchar,
-@userId nvarchar,
-@userName nvarchar,
-@geo nvarchar,
-@coordinates nvarchar,
-@place_id nvarchar,
-@placeType nvarchar,
-@placeName nvarchar,
-@fullName nvarchar,
-@countryCode nvarchar,
-@country nvarchar,
-@boundingBox nvarchar
+@tweetId varchar(max),
+@text nvarchar(max),
+@hashTag varchar(max),
+@userName varchar(max),
+@place_id varchar(max),
+@city varchar(max),
+@countryCode varchar(max),
+@country varchar(max),
+@coord_xx varchar(max),
+@coord_xy varchar(max),
+@coord_yx varchar(max),
+@coord_yy varchar(max)
 )
 AS
 BEGIN
 	IF not exists(select 1 from place_tbl where id = @place_id)
 		BEGIN
-			insert into place_tbl (id, placeType, placeName, fullName, countryCode, country, boundingBox, tweetCount)
-			values(@place_id, @placeType, @placeName, @fullName, @countryCode, @country, @boundingBox, 0);
+			insert into place_tbl (id, city, countryCode, country, coord_xx, coord_xy, coord_yx, coord_yy, tweetCount)
+			values(@place_id, @city, @countryCode, @country, @coord_xx, @coord_xy, @coord_yx, @coord_yy, 0);
 		END
 	
-	DECLARE @placeId DECIMAL(38,0)
-	DECLARE @placeTweetCount DECIMAL(38,0)
+	DECLARE @placeId bigint
+	DECLARE @placeTweetCount bigint
 	select @placeId = placeId, @placeTweetCount = tweetCount from place_tbl where id = @place_id;
 
-	update place_tbl
-	set tweetCount = (@placeTweetCount + 1)
-	where placeId = @placeId
-
-	IF not exists (select 1 from tweet_tbl where tweetId = @tweetId)
+	IF exists(select 1 from place_tbl where id = @place_id)
 		BEGIN
-			insert into tweet_tbl (tweetId, createdTime, text, placeId, hashTag, userId, userName, geo, coordinates) 
-			values(@tweetId, GETDATE(), @text, @placeId, @hashTag, @userId, @userName, @geo, @coordinates);
+
+			update place_tbl
+			set tweetCount = (@placeTweetCount + 1)
+			where placeId = @placeId
+
+			insert into tweet_tbl (tweetId, text, createdTime, placeId, hashTag, userName) 
+			values(@tweetId, @text, GETDATE(), @placeId, @hashTag, @userName);
+
+			IF NOT EXISTS(select 1 from hashtagtoplace_tbl where hashTag = @hashTag and placeId = @placeId)
+				begin
+					insert into hashtagtoplace_tbl(hashTag, placeId, tweetCount)
+					values(@hashTag, @placeId, 0)
+				end
+
+			DECLARE @hashTagPlaceTweetCount bigint
+			select @hashTagPlaceTweetCount = tweetCount from hashtagtoplace_tbl where hashTag = @hashTag and placeId = @placeId
+
+			update hashtagtoplace_tbl
+			set tweetCount = (@hashTagPlaceTweetCount + 1)
+			where hashTag = @hashTag and placeId = @placeId
+
+			select @tweetId, @hashTag, @userName, @place_id, @city, @countryCode, 
+			@country, @coord_xx, @coord_xy, @coord_yx, @coord_yy, @text
+
 		END
-
-	IF NOT EXISTS(select 1 from hashtagtoplace_tbl where hashTag = @hashTag and placeId = @placeId)
-		begin
-			insert into hashtagtoplace_tbl(hashTag, placeId, tweetCount)
-			values(@hashTag, @placeId, 0)
-		end
-
-	DECLARE @hashTagPlaceTweetCount DECIMAL(38,0)
-	select @hashTagPlaceTweetCount = tweetCount from hashtagtoplace_tbl where hashTag = @hashTag and placeId = @placeId
-
-	update hashtagtoplace_tbl
-	set tweetCount = (@hashTagPlaceTweetCount + 1)
-	where hashTag = @hashTag and placeId = @placeId
-
-	select 1
 END
 GO
