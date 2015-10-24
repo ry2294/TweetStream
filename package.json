@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "aws-sdk": "^2.2.11",
     "express": "^4.13.3",
     "mongoose": "^4.1.10",
     "mssql": "^2.3.1",
