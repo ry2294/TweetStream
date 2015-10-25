@@ -43,13 +43,11 @@ utilTweetStream.startStreaming = function() {
             tweetData.countryCode = tweet.place.country_code;
             tweetData.country = JSON.stringify(tweet.place.country);
             var coordinates = tweet.place.bounding_box.coordinates[0];
-            tweetData.coord_xx = coordinates[0];
-            tweetData.coord_xy = coordinates[1];
-            tweetData.coord_yx = coordinates[2];
-            tweetData.coord_yy = coordinates[3];
+            tweetData.x = coordinates[0][0];
+            tweetData.y = coordinates[0][1];
             tweetData.timeStamp = tweet.timestamp_ms;
 
-            // console.log('tweetData = ' + JSON.stringify(tweetData));
+            //console.log('coord = ' + JSON.stringify(coordinates));
             utilDynamoDB.tweetNotExists(tweetData);
             utilDynamoDB.placeNotExists(tweetData);
             utilDynamoDB.hashTagPlaceNotExists(tweetData);

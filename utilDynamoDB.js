@@ -1,8 +1,8 @@
 var AWS = require('aws-sdk');
 
 AWS.config.update({
-    accessKeyId: 'AKIAJZAUZFJ4MSODVETA', 
-    secretAccessKey: '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'});
+    accessKeyId: 'AKIAILGFDNFXVTZBNTCA', 
+    secretAccessKey: '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'});
 
 AWS.config.update({region: 'us-west-2'});
 
@@ -93,10 +93,8 @@ var insertPlace = function(tweetData) {
             "city": tweetData.city,
             "countryCode":  tweetData.countryCode,
             "country": tweetData.country,
-            "coord_xx": tweetData.coord_xx,
-            "coord_xy": tweetData.coord_xy,
-            "coord_yx": tweetData.coord_yx,
-            "coord_yy": tweetData.coord_yy,
+            "x": tweetData.x,
+            "y": tweetData.y,
             "tweetCount": 0
         }
     };
