@@ -1,0 +1,4 @@
+Tweet Stream
+
+Collects stream data from Twitter Stream APIs and stores it DynamoDB.
+Later this data will be used by Tweet Map to plot on Google Maps.
