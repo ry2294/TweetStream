@@ -1,6 +1,7 @@
 var Twitter = require('twitter');
 var config = require('./config');
 var utilDynamoDB = require('./utilDynamoDB');
+var utilInsertTweet = require('./utilInsertTweet');
 
 var client = new Twitter({
     consumer_key: config.twitter.consumerKey,
@@ -48,9 +49,10 @@ utilTweetStream.startStreaming = function() {
             tweetData.timeStamp = tweet.timestamp_ms;
 
             //console.log('coord = ' + JSON.stringify(coordinates));
-            utilDynamoDB.tweetNotExists(tweetData);
-            utilDynamoDB.placeNotExists(tweetData);
-            utilDynamoDB.hashTagPlaceNotExists(tweetData);
+            //utilDynamoDB.tweetNotExists(tweetData);
+            //utilDynamoDB.placeNotExists(tweetData);
+            //utilDynamoDB.hashTagPlaceNotExists(tweetData);
+            utilInsertTweet.ifTweetNotExistsInsert(tweetData);
     	}
     	
       });
