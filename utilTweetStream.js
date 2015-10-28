@@ -1,6 +1,5 @@
 var Twitter = require('twitter');
 var config = require('./config');
-var utilDynamoDB = require('./utilDynamoDB');
 var utilInsertTweet = require('./utilInsertTweet');
 
 var client = new Twitter({
