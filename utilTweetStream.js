@@ -18,15 +18,11 @@ utilTweetStream.startStreaming = function() {
       	
         if(tweet.id_str != null
             && tweet.text != null
-            && tweet.entities.hashtags != null
-            && tweet.entities.hashtags.length > 0
-            && tweet.entities.hashtags[0].text != null
         	&& tweet.user != null && tweet.user.name != null
         	&& tweet.place != null
             && tweet.place.id != null
             && tweet.place.place_type == 'city'
             && tweet.place.name != null
-        	&& tweet.place.country_code != null
             && tweet.place.country != null
             && tweet.place.bounding_box != null
             && tweet.place.bounding_box.type == 'Polygon'
@@ -36,22 +32,15 @@ utilTweetStream.startStreaming = function() {
             var tweetData = {};
             tweetData.tweetId = tweet.id_str;
             tweetData.text = tweet.text;
-            tweetData.hashTag = tweet.entities.hashtags[0].text;
             tweetData.userName = tweet.user.name;
             tweetData.place_id = tweet.place.id;
             tweetData.city = tweet.place.name;
-            tweetData.countryCode = tweet.place.country_code;
             tweetData.country = JSON.stringify(tweet.place.country);
             var coordinates = tweet.place.bounding_box.coordinates[0];
             tweetData.x = coordinates[0][0];
             tweetData.y = coordinates[0][1];
-            tweetData.timeStamp = tweet.timestamp_ms;
 
-            //console.log('coord = ' + JSON.stringify(coordinates));
-            //utilDynamoDB.tweetNotExists(tweetData);
-            //utilDynamoDB.placeNotExists(tweetData);
-            //utilDynamoDB.hashTagPlaceNotExists(tweetData);
-            utilInsertTweet.ifTweetNotExistsInsert(tweetData);
+            utilInsertTweet.insertTweet(tweetData);
     	}
     	
       });
