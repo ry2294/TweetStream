@@ -1,6 +1,6 @@
 branch-defaults:
   master:
-    environment: TweetStream-dev
+    environment: tweetworker-env
 global:
   application_name: TweetStream
   default_ec2_keyname: tweetMap
