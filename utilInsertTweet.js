@@ -15,11 +15,32 @@ var dynamodb = new AWS.DynamoDB();
 
 var utilInsertTweet = {};
 
+utilInsertTweet.insertWOEID = function(woeid, city, country) {
+    dynamodbDoc.put({
+        TableName: "place_tbl",
+        Item: {
+            "woeid": woeid,
+            "city": city,
+            "country": country,
+            "tweetCount": 0,
+            "neutral": 0,
+            "negative": 0,
+            "positive": 0,
+            "sentimenterror": 0,
+            "fetchTrends": 0,
+            "trends": "Top Trending topics: "
+        }
+    }, function(error, data) {
+        if(error) console.log("insert woeid error = " + JSON.stringify(error));
+    });
+};
+
 utilInsertTweet.insertTweet = function(tweetData) {
     var params = {
         TableName: "tweet_tbl",
         Item: {
             "tweetId":  tweetData.tweetId,
+            "woeid": tweetData.woeid,
             "text": tweetData.text,
             "placeId": tweetData.place_id,
             "userName": tweetData.userName,
@@ -32,19 +53,14 @@ utilInsertTweet.insertTweet = function(tweetData) {
 
     dynamodbDoc.put(params, function(error, data) {
         if (error) {
-           console.error("insertTweet Error : ", error);
+           console.log("insertTweet Error : ", JSON.stringify(error));
         } else {
-            console.log("insertTweet Succeeded:", JSON.stringify(data));
             sqs.sendMessage({
                 MessageBody: tweetData.tweetId,
                 QueueUrl: config.sqs.queueurl,
                 DelaySeconds: 0
             }, function (error, data) {
-                if (error) {
-                    console.log("SQS Error = ", error);
-                } else {
-                    console.log("SQS Success = " + data);
-                }
+                if (error) console.log("SQS Error = ", error);
             });
        }
     });

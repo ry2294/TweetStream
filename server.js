@@ -1,3 +1,3 @@
 var utilTweetStream = require('./utilTweetStream');
 
-utilTweetStream.startStreaming();
+utilTweetStream.getTrendsAvailable();
